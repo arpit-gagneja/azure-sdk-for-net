@@ -3,11 +3,11 @@ parameters:
   BaselineFilePath: ''
   SourceDirectory: $(Build.SourcesDirectory)
   ServiceDirectory: ''
-  $targetBranch: ("origin/${env:SYSTEM_PULLREQUEST_TARGETBRANCH}" -replace "/refs/heads/")
   
 steps:
 - pwsh: |
     if ("$(Build.Reason)" -eq 'PullRequest') {
+      $targetBranch = "origin/$(System.PullRequest.TargetBranch)" -replace "/refs/heads/"
       (git diff $targetBranch HEAD --name-only)
       | ForEach-Object { Add-Content -Path "${{ parameters.SourceDirectory }}/credscan.tsv" -Value "${{ parameters.SourceDirectory }}/$_"}
     }
